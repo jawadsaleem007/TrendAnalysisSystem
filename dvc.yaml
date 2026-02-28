@@ -37,10 +37,4 @@ stages:
 
   dvc_push:
     cmd: dvc push
-    deps:
-      - data/raw/products_raw.json.dvc
-      - data/processed/products_clean.csv.dvc
-      - data/features/vocab.json.dvc
-      - data/features/bow_matrix.npy.dvc
-      - data/features/frequencies.json.dvc
     always_changed: true

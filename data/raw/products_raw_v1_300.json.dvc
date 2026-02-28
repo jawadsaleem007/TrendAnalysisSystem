@@ -1,0 +1,5 @@
+outs:
+- md5: 76948526b41fcc21b799c2f713eb538f
+  size: 212441
+  hash: md5
+  path: products_raw_v1_300.json
