@@ -1,0 +1,46 @@
+stages:
+  scrape_data:
+    cmd: python src/scraper.py --limit 500
+    deps:
+      - src/scraper.py
+    outs:
+      - data/raw/products_raw.json
+
+  preprocess_data:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - data/raw/products_raw.json
+    outs:
+      - data/processed/products_clean.csv
+
+  generate_features:
+    cmd: python src/representation.py
+    deps:
+      - src/representation.py
+      - data/processed/products_clean.csv
+    outs:
+      - data/features/vocab.json
+      - data/features/bow_matrix.npy
+      - data/features/frequencies.json
+
+  compute_statistics:
+    cmd: python src/statistics.py
+    deps:
+      - src/statistics.py
+      - data/raw/products_raw.json
+      - data/processed/products_clean.csv
+      - data/features/vocab.json
+      - data/features/frequencies.json
+    outs:
+      - reports/trend_summary.txt
+
+  dvc_push:
+    cmd: dvc push
+    deps:
+      - data/raw/products_raw.json.dvc
+      - data/processed/products_clean.csv.dvc
+      - data/features/vocab.json.dvc
+      - data/features/bow_matrix.npy.dvc
+      - data/features/frequencies.json.dvc
+    always_changed: true

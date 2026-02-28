@@ -1,0 +1,7 @@
+requests>=2.32.0
+beautifulsoup4>=4.12.0
+pandas>=2.2.0
+numpy>=2.0.0
+nltk>=3.9.0
+dvc[s3]>=3.60.0
+apache-airflow>=2.10.0
