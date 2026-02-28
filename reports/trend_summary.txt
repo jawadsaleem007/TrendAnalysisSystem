@@ -1,0 +1,110 @@
+TrendScope NLP Trend Summary
+========================================
+
+1) Top 30 Unigrams
+- ai: 271
+- built: 226
+- agent: 220
+- code: 152
+- tool: 103
+- hn: 101
+- claud: 92
+- open: 88
+- use: 83
+- my: 78
+- build: 76
+- sourc: 71
+- no: 71
+- but: 71
+- time: 68
+- app: 67
+- so: 66
+- api: 65
+- real: 64
+- hi: 63
+- run: 63
+- ve: 61
+- into: 57
+- one: 53
+- can: 53
+- work: 50
+- file: 49
+- want: 49
+- been: 47
+- local: 47
+
+2) Top 20 Bigrams
+- ai agent: 79
+- open sourc: 59
+- claud code: 58
+- hi hn: 53
+- ve been: 35
+- hey hn: 34
+- hn built: 31
+- real time: 28
+- so built: 27
+- ai code: 20
+- mcp server: 20
+- self host: 18
+- code agent: 18
+- been build: 15
+- cli tool: 12
+- browser base: 11
+- got tire: 10
+- ai assist: 10
+- local first: 10
+- vs code: 9
+
+3) Most Common Tags/Categories
+- ai: 352
+- developer_tools: 296
+- saas: 83
+- general: 79
+- automation: 58
+- productivity: 56
+
+4) Vocabulary Size: 3089
+5) Average Description Length (tokens): 28.73
+
+6) Near-Duplicate Titles (MED threshold <= 3)
+- (0) gas town control plane – hosted monitoring for multi‑agent workspaces <-> gas town control plane – hosted monitoring for multi‑agent workspaces
+- (0) shannon – local desktop app to orchestrate claude code agent teams <-> shannon – local desktop app to orchestrate claude code agent teams
+
+7) Unigram Probability Estimates (Top 30 by probability)
+- P(ai) = 0.018863
+- P(built) = 0.015730
+- P(agent) = 0.015313
+- P(code) = 0.010580
+- P(tool) = 0.007169
+- P(hn) = 0.007030
+- P(claud) = 0.006404
+- P(open) = 0.006125
+- P(use) = 0.005777
+- P(my) = 0.005429
+- P(build) = 0.005290
+- P(sourc) = 0.004942
+- P(no) = 0.004942
+- P(but) = 0.004942
+- P(time) = 0.004733
+- P(app) = 0.004663
+- P(so) = 0.004594
+- P(api) = 0.004524
+- P(real) = 0.004455
+- P(hi) = 0.004385
+- P(run) = 0.004385
+- P(ve) = 0.004246
+- P(into) = 0.003967
+- P(one) = 0.003689
+- P(can) = 0.003689
+- P(work) = 0.003480
+- P(file) = 0.003411
+- P(want) = 0.003411
+- P(been) = 0.003271
+- P(local) = 0.003271
+
+8) Perplexity for 5 Held-Out Product Descriptions
+- Doc 1: 1479.6839
+- Doc 2: 1560.0492
+- Doc 3: 667.0428
+- Doc 4: 965.9300
+- Doc 5: 787.9645
