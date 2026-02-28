@@ -1,0 +1,23 @@
+Airflow DAG Execution Evidence
+=============================
+
+Environment
+- Project path: E:/Semester 7/NLP/trend_intelligence_pipeline
+- DAG ID: nlp_trend_dag
+- Airflow command used: .venv310/Scripts/airflow.exe dags test nlp_trend_dag 2026-03-05
+
+Run Evidence (from Airflow output)
+- DagRun ID: manual__2026-03-05T00:00:00+00:00
+- Airflow reported: "Dag run in success state"
+- dvc_push output: "Everything is up to date."
+
+Task-State Evidence
+- Command used: .venv310/Scripts/airflow.exe tasks states-for-dag-run nlp_trend_dag manual__2026-03-05T00:00:00+00:00
+- scrape_data: success
+- preprocess_data: success
+- generate_features: success
+- compute_statistics: success
+- dvc_push: success
+
+Conclusion
+- The DAG executed end-to-end successfully with correct task dependency flow.

@@ -24,9 +24,23 @@ DVC artifacts tracked
 
 Remote configuration
 - Default remote name: dagshub
-- URL: s3://dagshub/trendscope/trend-intelligence-pipeline.dvc
-- endpointurl: https://dagshub.com
+- URL: s3://my-first-repo
+- endpointurl: https://dagshub.com/api/v1/repo-buckets/s3/jawadsaleem007
+- region: us-east-1
 
-Push attempt status
+Push status
 - dvc push executed
-- Result: failed due to missing credentials ("Unable to locate credentials")
+- Result: success (artifacts pushed / up to date)
+
+Airflow DAG execution evidence
+- DAG file: dags/nlp_trend_dag.py
+- DAG id: nlp_trend_dag
+- Test run command: airflow dags test nlp_trend_dag 2026-03-05
+- Run id: manual__2026-03-05T00:00:00+00:00
+- Dag run state: success
+- Task states (airflow tasks states-for-dag-run):
+  - scrape_data: success
+  - preprocess_data: success
+  - generate_features: success
+  - compute_statistics: success
+  - dvc_push: success

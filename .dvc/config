@@ -1,5 +1,6 @@
 [core]
     remote = dagshub
 ['remote "dagshub"']
-    url = s3://dagshub/trendscope/trend-intelligence-pipeline.dvc
-    endpointurl = https://dagshub.com
+    url = s3://my-first-repo
+    endpointurl = https://dagshub.com/api/v1/repo-buckets/s3/jawadsaleem007
+    region = us-east-1

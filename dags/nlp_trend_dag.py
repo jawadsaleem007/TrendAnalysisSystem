@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import os
 import subprocess
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -11,12 +12,26 @@ from airflow.operators.python import PythonOperator
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PYTHON_BIN = os.environ.get("PIPELINE_PYTHON", "python")
+PYTHON_BIN = os.environ.get("PIPELINE_PYTHON", sys.executable)
+DVC_BIN = os.environ.get("PIPELINE_DVC")
+COMMAND_TIMEOUT_SECONDS = int(os.environ.get("PIPELINE_CMD_TIMEOUT_SECONDS", "300"))
+
+if not DVC_BIN:
+    python_path = Path(PYTHON_BIN)
+    candidate = python_path.with_name("dvc.exe")
+    DVC_BIN = str(candidate) if candidate.exists() else "dvc"
 
 
-def run_cmd(command: list[str]) -> None:
+def run_cmd(command: list[str], timeout_seconds: int | None = None) -> None:
     logging.info("Running command: %s", " ".join(command))
-    result = subprocess.run(command, cwd=PROJECT_ROOT, capture_output=True, text=True, check=False)
+    result = subprocess.run(
+        command,
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=timeout_seconds or COMMAND_TIMEOUT_SECONDS,
+    )
     logging.info("stdout:\n%s", result.stdout)
     if result.stderr:
         logging.warning("stderr:\n%s", result.stderr)
@@ -41,11 +56,10 @@ def task_compute_statistics() -> None:
 
 
 def task_dvc_push() -> None:
-    run_cmd(["dvc", "add", "data/raw/products_raw.json"])
-    run_cmd(["dvc", "add", "data/processed/products_clean.csv"])
-    run_cmd(["dvc", "add", "data/features/vocab.json"])
-    run_cmd(["dvc", "add", "data/features/bow_matrix.npy"])
-    run_cmd(["dvc", "push"])
+    if os.environ.get("SKIP_DVC_PUSH", "0") == "1":
+        logging.info("Skipping dvc_push because SKIP_DVC_PUSH=1")
+        return
+    run_cmd([DVC_BIN, "push"])
 
 
 default_args = {
@@ -53,8 +67,8 @@ default_args = {
     "depends_on_past": False,
     "email_on_failure": False,
     "email_on_retry": False,
-    "retries": 2,
-    "retry_delay": timedelta(minutes=3),
+    "retries": 1,
+    "retry_delay": timedelta(seconds=10),
 }
 
 

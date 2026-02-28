@@ -1,0 +1,111 @@
+TrendScope NLP Pipeline - Full Command Runbook (Windows PowerShell)
+
+1) Go to workspace
+Set-Location "e:/Semester 7/NLP"
+
+2) Create project folder (if needed) and enter it
+New-Item -ItemType Directory -Path "trend_intelligence_pipeline" -Force
+Set-Location "e:/Semester 7/NLP/trend_intelligence_pipeline"
+
+3) Create Python 3.10 virtual environment and activate
+py -3.10 -m venv .venv310
+& ".venv310/Scripts/Activate.ps1"
+
+4) Upgrade pip and install dependencies
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
+5) Initialize Git + DVC
+git init
+dvc init
+
+6) Run Stage 1 and keep two dataset versions (v1=300, v2=500)
+python src/scraper.py --limit 300 --output data/raw/products_raw.json
+Copy-Item data/raw/products_raw.json data/raw/products_raw_v1_300.json -Force
+
+python src/scraper.py --limit 500 --output data/raw/products_raw.json
+Copy-Item data/raw/products_raw.json data/raw/products_raw_v2_500.json -Force
+
+7) Run remaining pipeline stages
+python src/preprocess.py
+python src/representation.py
+python src/statistics.py
+
+8) Track versioned raw snapshots with DVC
+dvc add data/raw/products_raw_v1_300.json
+dvc add data/raw/products_raw_v2_500.json
+
+9) Reproduce full stage-based pipeline and create lockfile
+dvc repro compute_statistics
+
+10) Configure DagsHub remote (S3-compatible)
+# Replace placeholders below
+$DAGSHUB_USERNAME = "<your_dagshub_username>"
+$DAGSHUB_REPO = "<your_dagshub_repo_name>"
+$DAGSHUB_TOKEN = "<your_dagshub_access_token>"
+
+dvc remote add -d dagshub "s3://$DAGSHUB_REPO"
+dvc remote modify dagshub endpointurl "https://dagshub.com/api/v1/repo-buckets/s3/$DAGSHUB_USERNAME"
+dvc remote modify dagshub region "us-east-1"
+dvc remote modify --local dagshub endpointurl "https://dagshub.com/api/v1/repo-buckets/s3/$DAGSHUB_USERNAME"
+dvc remote modify --local dagshub region "us-east-1"
+dvc remote modify --local dagshub access_key_id "$DAGSHUB_TOKEN"
+dvc remote modify --local dagshub secret_access_key "$DAGSHUB_TOKEN"
+
+11) Push DVC data to DagsHub remote storage
+dvc push
+
+12) Commit code + DVC metadata to Git
+git add .
+git commit -m "Initial TrendScope NLP pipeline with DVC and Airflow"
+
+13) Push code to GitHub
+# Replace with your GitHub URL
+$GITHUB_REPO = "https://github.com/<your_username>/<your_repo>.git"
+git remote add origin $GITHUB_REPO
+git push -u origin master
+
+14) Run Airflow DAG (CLI test mode, fast and reproducible)
+# Set Airflow + pipeline environment variables for this project
+$env:AIRFLOW_HOME = "E:/Semester 7/NLP/trend_intelligence_pipeline/.airflow"
+$env:AIRFLOW__CORE__DAGS_FOLDER = "E:/Semester 7/NLP/trend_intelligence_pipeline/dags"
+$env:PIPELINE_PYTHON = "E:/Semester 7/NLP/trend_intelligence_pipeline/.venv310/Scripts/python.exe"
+$env:PIPELINE_DVC = "E:/Semester 7/NLP/trend_intelligence_pipeline/.venv310/Scripts/dvc.exe"
+$env:PIPELINE_CMD_TIMEOUT_SECONDS = "120"
+
+# Initialize / migrate Airflow metadata DB
+& ".venv310/Scripts/airflow.exe" db migrate
+
+# Run one full DAG test execution (includes dvc_push)
+& ".venv310/Scripts/airflow.exe" dags test nlp_trend_dag 2026-03-05
+
+# View task states for the tested run (evidence)
+& ".venv310/Scripts/airflow.exe" tasks states-for-dag-run nlp_trend_dag manual__2026-03-05T00:00:00+00:00
+
+15) Run Airflow GUI (web UI) and manually trigger DAG
+# Use same environment variables as step 14 in the terminal first
+
+# Start all-in-one Airflow services (webserver + scheduler)
+& ".venv310/Scripts/airflow.exe" standalone
+
+# Open UI in browser
+# http://localhost:8080
+
+# In UI:
+# - Open DAG: nlp_trend_dag
+# - Click "Trigger DAG"
+# - Check Graph / Grid views and task logs
+
+# Stop Airflow standalone:
+# Ctrl + C in the terminal
+
+Expected key outputs:
+- data/raw/products_raw.json
+- data/raw/products_raw_v1_300.json (+ .dvc)
+- data/raw/products_raw_v2_500.json (+ .dvc)
+- data/processed/products_clean.csv
+- data/features/vocab.json
+- data/features/bow_matrix.npy
+- reports/trend_summary.txt
+- dvc.yaml
+- dvc.lock
