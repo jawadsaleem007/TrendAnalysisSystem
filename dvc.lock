@@ -1,0 +1,82 @@
+schema: '2.0'
+stages:
+  scrape_data:
+    cmd: python src/scraper.py --limit 500
+    deps:
+    - path: src/scraper.py
+      hash: md5
+      md5: 97f32ded189b492df22b31e6773f7cd6
+      size: 4988
+    outs:
+    - path: data/raw/products_raw.json
+      hash: md5
+      md5: 024d3177b600a3682be3b9038f0271d2
+      size: 355001
+  preprocess_data:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/raw/products_raw.json
+      hash: md5
+      md5: 024d3177b600a3682be3b9038f0271d2
+      size: 355001
+    - path: src/preprocess.py
+      hash: md5
+      md5: 560c02fdfcc8e10e6f87a66009abc41a
+      size: 3418
+    outs:
+    - path: data/processed/products_clean.csv
+      hash: md5
+      md5: 73b1e0a562ff0d8e2460e7b4133dd2b6
+      size: 597140
+  generate_features:
+    cmd: python src/representation.py
+    deps:
+    - path: data/processed/products_clean.csv
+      hash: md5
+      md5: 73b1e0a562ff0d8e2460e7b4133dd2b6
+      size: 597140
+    - path: src/representation.py
+      hash: md5
+      md5: 655ccd80362dfcf03fe2ad5f2ac3cb1c
+      size: 3693
+    outs:
+    - path: data/features/bow_matrix.npy
+      hash: md5
+      md5: 98b566ceeb8d55926d8a95d6a465ac6b
+      size: 6180128
+    - path: data/features/frequencies.json
+      hash: md5
+      md5: ba88f1af3dd7974cae1b63d52aea10dd
+      size: 895612
+    - path: data/features/vocab.json
+      hash: md5
+      md5: 4ca0412aed02ff83aadf5ace34a8ff4b
+      size: 726360
+  compute_statistics:
+    cmd: python src/statistics.py
+    deps:
+    - path: data/features/frequencies.json
+      hash: md5
+      md5: ba88f1af3dd7974cae1b63d52aea10dd
+      size: 895612
+    - path: data/features/vocab.json
+      hash: md5
+      md5: 4ca0412aed02ff83aadf5ace34a8ff4b
+      size: 726360
+    - path: data/processed/products_clean.csv
+      hash: md5
+      md5: 73b1e0a562ff0d8e2460e7b4133dd2b6
+      size: 597140
+    - path: data/raw/products_raw.json
+      hash: md5
+      md5: 024d3177b600a3682be3b9038f0271d2
+      size: 355001
+    - path: src/statistics.py
+      hash: md5
+      md5: 1622e1cfb5c801ec1ad1dff7c6a8ee7c
+      size: 6787
+    outs:
+    - path: reports/trend_summary.txt
+      hash: md5
+      md5: b65c3aa501161407bc7162b169b7d3a2
+      size: 2213
