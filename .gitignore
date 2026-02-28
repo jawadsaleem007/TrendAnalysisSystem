@@ -6,3 +6,9 @@ __pycache__/
 .mypy_cache/
 airflow.db
 logs/
+data/raw/products_raw.json
+data/processed/products_clean.csv
+data/features/vocab.json
+data/features/bow_matrix.npy
+data/features/frequencies.json
+reports/trend_summary.txt
