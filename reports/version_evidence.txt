@@ -1,0 +1,32 @@
+TrendScope DVC Versioning Evidence
+=================================
+
+Dataset cardinalities
+- v1 file: data/raw/products_raw_v1_300.json -> 300 records
+- v2 file: data/raw/products_raw_v2_500.json -> 500 records
+- current pipeline raw output: data/raw/products_raw.json -> 500 records
+
+Git commits (latest first)
+- 88b27219 Add DVC lockfile for reproducible stages
+- 9977e42c Ignore pipeline outputs in Git
+- bb6dff10 Stop SCM tracking for DVC stage outputs
+- b4e82d36 Fix repo tracking: use DVC pointers, ignore venvs, and repair dvc.yaml
+- ae13b2cd Track raw dataset v2 (500 listings) + processed/features via DVC
+
+DVC artifacts tracked
+- data/raw/products_raw_v1_300.json.dvc
+- data/raw/products_raw_v2_500.json.dvc
+- dvc.yaml + dvc.lock stages:
+  - scrape_data -> data/raw/products_raw.json
+  - preprocess_data -> data/processed/products_clean.csv
+  - generate_features -> data/features/vocab.json, data/features/bow_matrix.npy, data/features/frequencies.json
+  - compute_statistics -> reports/trend_summary.txt
+
+Remote configuration
+- Default remote name: dagshub
+- URL: s3://dagshub/trendscope/trend-intelligence-pipeline.dvc
+- endpointurl: https://dagshub.com
+
+Push attempt status
+- dvc push executed
+- Result: failed due to missing credentials ("Unable to locate credentials")
